@@ -1,67 +1,66 @@
 package ep1;
 import ep1.SymbolTableValue.ETypes;
 import fr.ul.miage.arbre.*;
+
 public class Test8 {
 
-	public static void main(String[] args) {
+    public static void main(String[] arguments) {
 
-    	SymbolTable symbolTable = new SymbolTable();
-		
-		SymbolTableValueFunction TDSmain = new SymbolTableValueFunction("main", ETypes.vide);
-		symbolTable.addValue(TDSmain);
-		SymbolTableValueInt TDSa = new SymbolTableValueInt("a", ETypes.entier);
-		symbolTable.addValue(TDSa);
-		SymbolTableValueFunction TDSf = new SymbolTableValueFunction("f", ETypes.entier, 2, 1);
-		symbolTable.addValue(TDSf);
-		SymbolTableValueInt TDSx = new SymbolTableValueInt("x", ETypes.entier, TDSf, 0);
-		symbolTable.addValue(TDSx);
-		SymbolTableValueIntParam TDSi = new SymbolTableValueIntParam("i", ETypes.entier, TDSf, 0);
-		symbolTable.addValue(TDSi);
-		SymbolTableValueIntParam TDSj = new SymbolTableValueIntParam("j", ETypes.entier, TDSf, 1);
-		symbolTable.addValue(TDSj);
-		
-		Prog prg = new Prog();
-		Fonction main = new Fonction(TDSmain);
-		prg.ajouterUnFils(main);
-		Fonction f = new Fonction(TDSf);
-		prg.ajouterUnFils(f);
-		
-		//f
-		Affectation aff2 = new Affectation();
-		Plus plus1 = new Plus();
-		plus1.setFilsGauche(new Idf(TDSi));
-		plus1.setFilsDroit(new Idf(TDSj));
-		aff2.setFilsGauche(new Idf(TDSx));
-		aff2.setFilsDroit(plus1);
-		
-		Retour retour = new Retour(TDSf);
-		Plus plus2 = new Plus();
-		plus2.setFilsGauche(new Idf(TDSx));
-		plus2.setFilsDroit(new Const(10));
-		retour.setLeFils(plus2);
-		
-		f.ajouterUnFils(aff2);
-		f.ajouterUnFils(retour);
-		
-		
-		//main
-		Affectation aff1 = new Affectation();
-		Appel appel = new Appel(TDSf);
-		appel.ajouterUnFils(new Const(1));
-		appel.ajouterUnFils(new Const(2));
-		aff1.setFilsGauche(new Idf(TDSa));
-		aff1.setFilsDroit(appel);
-		
-		Ecrire ecrire = new Ecrire();
-		ecrire.setLeFils(new Idf(TDSa));
-		
-		main.ajouterUnFils(aff1);
-		main.ajouterUnFils(ecrire);
-		
-		
-		String res = new GenerateCode().generateUASM(prg, symbolTable);
-		System.out.println(res);
+        SymbolTable symbolTable = new SymbolTable();
 
-		TxtAfficheur.afficher(prg);
-	}
+        SymbolTableValueFunction mainFunctionTable = new SymbolTableValueFunction("main", ETypes.vide);
+        symbolTable.addValue(mainFunctionTable);
+        SymbolTableValueInt intValueA = new SymbolTableValueInt("a", ETypes.entier);
+        symbolTable.addValue(intValueA);
+        SymbolTableValueFunction functionFTable = new SymbolTableValueFunction("f", ETypes.entier, 2, 1);
+        symbolTable.addValue(functionFTable);
+        SymbolTableValueInt intValueX = new SymbolTableValueInt("x", ETypes.entier, functionFTable, 0);
+        symbolTable.addValue(intValueX);
+        SymbolTableValueIntParam intValueI = new SymbolTableValueIntParam("i", ETypes.entier, functionFTable, 0);
+        symbolTable.addValue(intValueI);
+        SymbolTableValueIntParam intValueJ = new SymbolTableValueIntParam("j", ETypes.entier, functionFTable, 1);
+        symbolTable.addValue(intValueJ);
+
+        Prog program = new Prog();
+        Fonction mainFunction = new Fonction(mainFunctionTable);
+        program.ajouterUnFils(mainFunction);
+        Fonction functionF = new Fonction(functionFTable);
+        program.ajouterUnFils(functionF);
+
+        // Function F
+        Affectation assignment2 = new Affectation();
+        Plus plus1 = new Plus();
+        plus1.setFilsGauche(new Idf(intValueI));
+        plus1.setFilsDroit(new Idf(intValueJ));
+        assignment2.setFilsGauche(new Idf(intValueX));
+        assignment2.setFilsDroit(plus1);
+
+        Retour retour = new Retour(functionFTable);
+        Plus plus2 = new Plus();
+        plus2.setFilsGauche(new Idf(intValueX));
+        plus2.setFilsDroit(new Const(10));
+        retour.setLeFils(plus2);
+
+        functionF.ajouterUnFils(assignment2);
+        functionF.ajouterUnFils(retour);
+
+        // Main Function
+        Affectation assignment1 = new Affectation();
+        Appel functionCall = new Appel(functionFTable);
+        functionCall.ajouterUnFils(new Const(1));
+        functionCall.ajouterUnFils(new Const(2));
+        assignment1.setFilsGauche(new Idf(intValueA));
+        assignment1.setFilsDroit(functionCall);
+
+        Ecrire write = new Ecrire();
+        write.setLeFils(new Idf(intValueA));
+
+        mainFunction.ajouterUnFils(assignment1);
+        mainFunction.ajouterUnFils(write);
+
+        String result = new GenerateCode().generateUASM(program, symbolTable);
+        System.out.println(result);
+
+        TxtAfficheur.afficher(program);
+    }
 }

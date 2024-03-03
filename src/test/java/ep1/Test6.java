@@ -3,57 +3,57 @@ import ep1.SymbolTableValue.ETypes;
 import fr.ul.miage.arbre.*;
 
 public class Test6 {
-    public static void main(String[] args) {
-    	SymbolTable symbolTable = new SymbolTable();
-        Prog prg = new Prog();
+    public static void main(String[] arguments) {
+        SymbolTable symbolTable = new SymbolTable();
+        Prog program = new Prog();
 
-        SymbolTableValueInt TDSi = new SymbolTableValueInt("i", ETypes.entier);
-        SymbolTableValueInt TDSn = new SymbolTableValueInt("n", ETypes.entier, 5);
-        symbolTable.addValue(TDSn);
-        symbolTable.addValue(TDSi);
+        SymbolTableValueInt intValue1 = new SymbolTableValueInt("i", ETypes.entier);
+        SymbolTableValueInt intValue2 = new SymbolTableValueInt("n", ETypes.entier, 5);
+        symbolTable.addValue(intValue2);
+        symbolTable.addValue(intValue1);
 
-        SymbolTableValueFunction TDSmain = new SymbolTableValueFunction("main", ETypes.vide);
-        symbolTable.addValue(TDSmain);
-        Fonction main = new Fonction(TDSmain);
-        prg.ajouterUnFils(main);
+        SymbolTableValueFunction mainFunctionTable = new SymbolTableValueFunction("main", ETypes.vide);
+        symbolTable.addValue(mainFunctionTable);
+        Fonction mainFunction = new Fonction(mainFunctionTable);
+        program.ajouterUnFils(mainFunction);
 
-        Affectation aff1 = new Affectation();
-        main.ajouterUnFils(aff1);
+        Affectation assignment1 = new Affectation();
+        mainFunction.ajouterUnFils(assignment1);
 
-        Idf i1 = new Idf(TDSi);
-        aff1.setFilsGauche(i1);
-        aff1.setFilsDroit(new Const(0));
+        Idf idf_i1 = new Idf(intValue1);
+        assignment1.setFilsGauche(idf_i1);
+        assignment1.setFilsDroit(new Const(0));
 
-        TantQue tq = new TantQue(0);
-        main.ajouterUnFils(tq);
+        TantQue whileLoop = new TantQue(0);
+        mainFunction.ajouterUnFils(whileLoop);
 
-        Inferieur inf = new Inferieur();
-        tq.setCondition(inf);
-        Idf i2 = new Idf(TDSi);
-        Idf n = new Idf(TDSn);
-        inf.setFilsGauche(i2);
-        inf.setFilsDroit(n);
+        Inferieur lessThan = new Inferieur();
+        whileLoop.setCondition(lessThan);
+        Idf idf_i2 = new Idf(intValue1);
+        Idf idf_n = new Idf(intValue2);
+        lessThan.setFilsGauche(idf_i2);
+        lessThan.setFilsDroit(idf_n);
 
-        Bloc bloc = new Bloc();
-        tq.setBloc(bloc);
+        Bloc block = new Bloc();
+        whileLoop.setBloc(block);
 
-        Ecrire ecr = new Ecrire();
-        Idf i3 = new Idf(TDSi);
-        ecr.ajouterUnFils(i3);
-        bloc.ajouterUnFils(ecr);
+        Ecrire write = new Ecrire();
+        Idf idf_i3 = new Idf(intValue1);
+        write.ajouterUnFils(idf_i3);
+        block.ajouterUnFils(write);
 
-        Affectation aff2 = new Affectation();
-        bloc.ajouterUnFils(aff2);
-        Idf i4 = new Idf(TDSi);
-        aff2.setFilsGauche(i4);
+        Affectation assignment2 = new Affectation();
+        block.ajouterUnFils(assignment2);
+        Idf idf_i4 = new Idf(intValue1);
+        assignment2.setFilsGauche(idf_i4);
         Plus plus = new Plus();
-        aff2.setFilsDroit(plus);
+        assignment2.setFilsDroit(plus);
         plus.setFilsDroit(new Const(1));
-        plus.setFilsGauche(new Idf(TDSi));
+        plus.setFilsGauche(new Idf(intValue1));
 
-        String res = new GenerateCode().generateUASM(prg, symbolTable);
-        System.out.println(res);
-		TxtAfficheur.afficher(prg);
+        String result = new GenerateCode().generateUASM(program, symbolTable);
+        System.out.println(result);
+        TxtAfficheur.afficher(program);
 
     }
 }

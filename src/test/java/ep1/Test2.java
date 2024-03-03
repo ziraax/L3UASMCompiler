@@ -5,25 +5,25 @@ import fr.ul.miage.arbre.*;
 
 
 public class Test2 {
-    public static void main(String[] args) {
-    	SymbolTable symbolTable = new SymbolTable();
-    	SymbolTableValueInt i = new SymbolTableValueInt("i", ETypes.entier, 10);
-    	symbolTable.addValue(i);
-    	SymbolTableValueInt j = new SymbolTableValueInt("j", ETypes.entier, 20);
-        symbolTable.addValue(j);
-        SymbolTableValueInt k = new SymbolTableValueInt("k", ETypes.entier);
-        symbolTable.addValue(k);
-        SymbolTableValueInt l = new SymbolTableValueInt("l", ETypes.entier);
-        symbolTable.addValue(l);
+    public static void main(String[] arguments) {
+        SymbolTable symbolTable = new SymbolTable();
+        SymbolTableValueInt intValue1 = new SymbolTableValueInt("i", ETypes.entier, 10);
+        symbolTable.addValue(intValue1);
+        SymbolTableValueInt intValue2 = new SymbolTableValueInt("j", ETypes.entier, 20);
+        symbolTable.addValue(intValue2);
+        SymbolTableValueInt intValue3 = new SymbolTableValueInt("k", ETypes.entier);
+        symbolTable.addValue(intValue3);
+        SymbolTableValueInt intValue4 = new SymbolTableValueInt("l", ETypes.entier);
+        symbolTable.addValue(intValue4);
 
-        Prog prg = new Prog();
-        SymbolTableValueFunction TDSmain = new SymbolTableValueFunction("main", ETypes.vide);
-        symbolTable.addValue(TDSmain);
-        Fonction main = new Fonction(TDSmain);
-        prg.ajouterUnFils(main);
+        Prog program = new Prog();
+        SymbolTableValueFunction mainFunctionTable = new SymbolTableValueFunction("main", ETypes.vide);
+        symbolTable.addValue(mainFunctionTable);
+        Fonction mainFunction = new Fonction(mainFunctionTable);
+        program.ajouterUnFils(mainFunction);
 
-        String res = new GenerateCode().generateUASM(prg, symbolTable);
-        System.out.println(res);
-		TxtAfficheur.afficher(prg);
+        String result = new GenerateCode().generateUASM(program, symbolTable);
+        System.out.println(result);
+        TxtAfficheur.afficher(program);
     }
 }

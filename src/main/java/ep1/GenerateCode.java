@@ -3,7 +3,16 @@ import ep1.SymbolTableValue.ECat;
 import ep1.SymbolTableValue.ETypes;
 import fr.ul.miage.arbre.*;
 
+//Class responsible for generating UASM (Universal Assembly) code
 public class GenerateCode {
+	
+    /**
+     * Generates UASM code for the entire program.
+     * 
+     * @param a The root node of the AST.
+     * @param symbolTable The symbol table containing information about variables and functions.
+     * @return The generated UASM code.
+     */
     public String generateUASM(Noeud a, SymbolTable symbolTable) {
         String res = "";
         res += ".include beta.uasm\n.include intio.uasm\n.options tty\n";
@@ -15,6 +24,12 @@ public class GenerateCode {
         return res;
     }
     
+    /**
+     * Generates the data section of UASM code containing global variable declarations.
+     * 
+     * @param symbolTable The symbol table containing global variables.
+     * @return The generated data section code.
+     */
     public String generateData(SymbolTable symbolTable) {
         String res = "";
 
@@ -27,6 +42,13 @@ public class GenerateCode {
         return res;
     }
     
+    /**
+     * Generates UASM code for all functions in the program.
+     * 
+     * @param a The root node of the AST.
+     * @param symbolTable The symbol table containing function information.
+     * @return The generated UASM code for functions.
+     */
     public String generateCode(Noeud a, SymbolTable symbolTable) {
     	String res = "";
     	
@@ -36,6 +58,13 @@ public class GenerateCode {
         return res;
     }
     
+    /**
+     * Generates UASM code for an individual function.
+     * 
+     * @param function The function node from the AST.
+     * @param symbolTable The symbol table containing function information.
+     * @return The generated UASM code for the function.
+     */
     public String generateFunction(Fonction function, SymbolTable symbolTable) {
     	String res = "";
     	SymbolTableValueFunction f = (SymbolTableValueFunction) function.getValeur();
@@ -62,12 +91,13 @@ public class GenerateCode {
         return res;
     }
     
+    // Method to generate code for individual instructions
     public String generateInstruction(Noeud a, SymbolTable symbolTable) {
     	String res = "";
     	
         switch (a.getCat()) {
 	        case AFF:
-		        res += generateAffectation((Affectation) a, symbolTable);
+		        res += generateAssignement((Affectation) a, symbolTable);
 		        break;
 	    
 	        case SI:
@@ -96,21 +126,36 @@ public class GenerateCode {
 	    return res;
     }
     
-    public String generateAffectation(Affectation a, SymbolTable symbolTable) {
+    /**
+     * Generates UASM code for an assignment operation.
+     * 
+     * @param a The assignment node from the AST.
+     * @param symbolTable The symbol table containing variable information.
+     * @return The generated UASM code for the assignment operation.
+     */
+    public String generateAssignement(Affectation a, SymbolTable symbolTable) {
     	String res = "";
+        // Extract the left-hand side of the assignment
     	Idf filsGauche  = (Idf) a.getFilsGauche();
+        // Retrieve information about the variable from the symbol table
     	SymbolTableValueInt symbolTableFilsGauche = (SymbolTableValueInt) filsGauche.getValeur();
     	
+        // Generate UASM code for the expression on the right-hand side of the assignment
         res += generateExpression(a.getFilsDroit(), symbolTable);
+        // Pop the value of the expression from the stack into register r0
         res += "\tPOP(r0)\n";
         
+        // Determine the type of the left-hand side (global, local, or parameter)
         switch (symbolTableFilsGauche.cat) {
         	case Eglobal:
+                // Store the value into the memory location of the global variable
                 res += "\tST(r0," + symbolTableFilsGauche.name + ")\n";
                 break;
         	case Elocal:
             case Eparam:
+                // Calculate the offset of the local or parameter variable from the base pointer
             	int offset = symbolTableFilsGauche.getOffset();
+                // Store the value into the memory location at the calculated offset from the base pointer
             	res += "\tPUTFRAME(r0," + offset +")\n";
             	break;
             default:
@@ -119,6 +164,15 @@ public class GenerateCode {
         return res;
     }
     
+    /**
+     * Generates UASM code for an expression node in the Abstract Syntax Tree (AST).
+     * This method handles different types of expressions such as constants, identifiers,
+     * arithmetic operations, input/output operations, and function calls.
+     * 
+     * @param a The expression node from the AST.
+     * @param symbolTable The symbol table containing variable and function information.
+     * @return The generated UASM code for the expression.
+     */
     public String generateExpression(Noeud a, SymbolTable symbolTable) {
     	if(a == null) return "";
     	
@@ -160,17 +214,28 @@ public class GenerateCode {
         return res;
     }
     
+    /**
+     * Generates UASM code for an identifier node in the Abstract Syntax Tree (AST).
+     * 
+     * @param a The identifier node from the AST.
+     * @return The generated UASM code for the identifier.
+     */
     public String generateIdf(Idf a) {
         String res = "";
+        // Retrieve information about the identifier from the symbol table
         SymbolTableValueInt value = (SymbolTableValueInt) a.getValeur();
 
+        // Determine the category of the identifier (global, local, or parameter)
         switch (value.cat) {
             case Eglobal:
+                // Load the value of the global variable into register r0 and push it onto the stack
 	            res += "\tLD(" + value.name + ",r0)\n\tPUSH(r0)\n";
 	            break;
             case Elocal:
             case Eparam:
+                // Calculate the offset of the local or parameter variable from the base pointer
 	            int offset = value.getOffset();
+	            // Retrieve the value of the local or parameter variable from the stack frame at the calculated offset
 	            res += "\tGETFRAME(" + offset +",r0)\n\tPUSH(r0)\n";
 	            break;
             default:
@@ -318,41 +383,76 @@ public class GenerateCode {
     	return res;
     }
     
+    /**
+     * Generates UASM code for a block of statements.
+     * 
+     * @param a The block node from the Abstract Syntax Tree (AST).
+     * @param symbolTable The symbol table containing variable and function information.
+     * @return The generated UASM code for the block.
+     */
     public String generateBloc(Bloc a, SymbolTable symbolTable) {
-    	String res = "";
-    	
-    	for(Noeud fils : a.getFils()) {
+        String res = "";
+        
+        // Iterate through each statement in the block and generate code
+        for(Noeud fils : a.getFils()) {
             res += generateInstruction(fils, symbolTable); 
         }
-    	
-    	return res;
+        
+        return res;
     }
     
+    /**
+     * Generates UASM code for a write operation.
+     * 
+     * @param a The write node from the Abstract Syntax Tree (AST).
+     * @param symbolTable The symbol table containing variable and function information.
+     * @return The generated UASM code for the write operation.
+     */
     public String generateWrite(Ecrire a, SymbolTable symbolTable) {
-
-    	String res = "";
-    	res += generateExpression(a.getLeFils(), symbolTable);
-    	res += "\tPOP(r0)\n\tWRINT()\n";
-    	
-    	return res;
+        String res = "";
+        
+        // Generate code for the expression to be written
+        res += generateExpression(a.getLeFils(), symbolTable);
+        res += "\tPOP(r0)\n\tWRINT()\n"; // Write the expression's value
+        
+        return res;
     }
     
+    /**
+     * Generates UASM code for a while loop.
+     * 
+     * @param a The while loop node from the Abstract Syntax Tree (AST).
+     * @param symbolTable The symbol table containing variable and function information.
+     * @return The generated UASM code for the while loop.
+     */
     public String generateWhile(TantQue a, SymbolTable symbolTable) {
         String res = "";
+        
+        // Generate code for the loop condition and label
         res += "tantque" + a.getValeur() + ":\n";
         res += generateBool(a.getCondition(), symbolTable);
         res += "\tPOP(r0)\n\tBEQ(r0,fintantque" + a.getValeur() +")\n";
+        
+        // Generate code for the loop body and branching back to the loop
         res += generateBloc(a.getBloc(), symbolTable);
         res += "\tBR(tantque" + a.getValeur() +")\nfintantque" + a.getValeur() + ":\n";
 
         return res;
     }
     
+    /**
+     * Generates UASM code for a return statement.
+     * 
+     * @param a The return node from the Abstract Syntax Tree (AST).
+     * @param symbolTable The symbol table containing variable and function information.
+     * @return The generated UASM code for the return statement.
+     */
     public String generateReturn(Retour a, SymbolTable symbolTable) {
         String res = "";
         SymbolTableValueFunction f = (SymbolTableValueFunction) a.getValeur();
         int offset = (-3 - f.nbParam)*4;
 
+        // Generate code for the expression to be returned and store it in the appropriate stack frame location
         res += generateExpression(a.getLeFils(), symbolTable);
         res += "\tPOP(r0)\n";
         res += "\tPUTFRAME(r0, " + offset + ")\n";
@@ -360,25 +460,36 @@ public class GenerateCode {
         return res;
     }
     
+    /**
+     * Generates UASM code for a function call.
+     * 
+     * @param a The function call node from the Abstract Syntax Tree (AST).
+     * @param symbolTable The symbol table containing variable and function information.
+     * @return The generated UASM code for the function call.
+     */
     public String generateCall(Appel a, SymbolTable symbolTable) {
-    	String res = "";
-    	int p = 0;
+        String res = "";
+        int p = 0;
 
         SymbolTableValueFunction function = (SymbolTableValueFunction) a.getValeur();
-    	
-    	if(function.type == ETypes.entier){
-    		p = 1;
-    	}
+        
+        // Determine the number of parameters to allocate space for
+        if(function.type == ETypes.entier){
+            p = 1;
+        }
 
+        // Allocate space for parameters on the stack
         res += "\tALLOCATE(" + p + ")\n";
-    	
-    	for(Noeud fils : a.getFils()) {
-    		res += generateExpression(fils, symbolTable);
-    	}
-    	
-    	res += "\tCALL(" + function.name + ")\n";
+        
+        // Generate code for each parameter expression
+        for(Noeud fils : a.getFils()) {
+            res += generateExpression(fils, symbolTable);
+        }
+        
+        // Call the function and deallocate space for parameters
+        res += "\tCALL(" + function.name + ")\n";
         res += "\tDEALLOCATE(" + a.getFils().size() + ")\n";
-    	return res;
+        return res;
     }
     
     

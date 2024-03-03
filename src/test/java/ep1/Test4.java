@@ -3,41 +3,42 @@ import ep1.SymbolTableValue.ETypes;
 import fr.ul.miage.arbre.*;
 
 public class Test4 {
-    public static void main(String[] args) {
-    	SymbolTable symbolTable = new SymbolTable();
-        Prog prg = new Prog();
-        SymbolTableValueInt TDSi = new SymbolTableValueInt("i", ETypes.entier);
-        SymbolTableValueInt TDSj = new SymbolTableValueInt("j", ETypes.entier,20);
-        symbolTable.addValue(TDSi);
-        symbolTable.addValue(TDSj);
-    
-        SymbolTableValueFunction TDSmain = new SymbolTableValueFunction("main", ETypes.vide);
-        symbolTable.addValue(TDSmain);
-        Fonction main = new Fonction(TDSmain);
-        prg.ajouterUnFils(main);
+    public static void main(String[] arguments) {
+        SymbolTable symbolTable = new SymbolTable();
+        Prog program = new Prog();
+        SymbolTableValueInt intValue1 = new SymbolTableValueInt("i", ETypes.entier);
+        SymbolTableValueInt intValue2 = new SymbolTableValueInt("j", ETypes.entier, 20);
+        symbolTable.addValue(intValue1);
+        symbolTable.addValue(intValue2);
 
-        Affectation aff = new Affectation();
-        main.ajouterUnFils(aff);
+        SymbolTableValueFunction mainFunctionTable = new SymbolTableValueFunction("main", ETypes.vide);
+        symbolTable.addValue(mainFunctionTable);
+        Fonction mainFunction = new Fonction(mainFunctionTable);
+        program.ajouterUnFils(mainFunction);
 
-        Idf i = new Idf(TDSi);
-        aff.setFilsGauche(i);
+        Affectation assignment = new Affectation();
+        mainFunction.ajouterUnFils(assignment);
+
+        Idf idf_i = new Idf(intValue1);
+        assignment.setFilsGauche(idf_i);
 
         Lire lire = new Lire();
-        aff.setFilsDroit(lire);
+        assignment.setFilsDroit(lire);
 
         Ecrire ecrire = new Ecrire();
         Plus plus = new Plus();
-        main.ajouterUnFils(ecrire);
+        mainFunction.ajouterUnFils(ecrire);
         ecrire.ajouterUnFils(plus);
 
-        Idf i2 = new Idf(TDSi);
-        plus.setFilsGauche(i2);
-        Idf j = new Idf(TDSj);
-        plus.setFilsDroit(j);
+        Idf idf_i2 = new Idf(intValue1);
+        plus.setFilsGauche(idf_i2);
+        Idf idf_j = new Idf(intValue2);
+        plus.setFilsDroit(idf_j);
 
-        String res = new GenerateCode().generateUASM(prg, symbolTable);
-        System.out.println(res);
-        TxtAfficheur.afficher(prg);
+        String result = new GenerateCode().generateUASM(program, symbolTable);
+        System.out.println(result);
+        TxtAfficheur.afficher(program);
     }
 }
+
 

@@ -3,16 +3,16 @@ import ep1.SymbolTableValue.ETypes;
 import fr.ul.miage.arbre.*;
 
 public class Test1 {
-    public static void main(String[] args) {
+    public static void main(String[] arguments) {
         SymbolTable symbolTable = new SymbolTable();
-        Prog prg = new Prog();
-        SymbolTableValueFunction TDSmain = new SymbolTableValueFunction("main", ETypes.vide);
-        symbolTable.addValue(TDSmain);
-        Fonction main = new Fonction(TDSmain);
-        prg.ajouterUnFils(main);
+        Prog program = new Prog();
+        SymbolTableValueFunction mainFunctionTable = new SymbolTableValueFunction("main", ETypes.vide);
+        symbolTable.addValue(mainFunctionTable);
+        Fonction mainFunction = new Fonction(mainFunctionTable);
+        program.ajouterUnFils(mainFunction);
 
-        String res = new GenerateCode().generateUASM(prg, symbolTable);
-        System.out.println(res);
-		TxtAfficheur.afficher(prg);
+        String result = new GenerateCode().generateUASM(program, symbolTable);
+        System.out.println(result);
+        TxtAfficheur.afficher(program);
     }
 }
