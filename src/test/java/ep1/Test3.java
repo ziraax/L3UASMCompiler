@@ -18,6 +18,7 @@ public class Test3 {
         Idf idf_i = new Idf(intValue1);
         Idf idf_l = new Idf(intValue4);
         Idf idf_k = new Idf(intValue3);
+        Idf idf_j = new Idf(intValue2);
 
         Prog program = new Prog();
 
@@ -40,11 +41,13 @@ public class Test3 {
         Multiplication multiplication = new Multiplication();
         plus.setFilsDroit(multiplication);
         multiplication.setFilsGauche(new Const(3));
+        multiplication.setFilsDroit(idf_j);
 
         mainFunction.ajouterUnFils(assignment1);
         mainFunction.ajouterUnFils(assignment2);
 
         String result = new GenerateCode().generateUASM(program, symbolTable);
         System.out.println(result);
+        TxtAfficheur.afficher(program);
     }
 }
