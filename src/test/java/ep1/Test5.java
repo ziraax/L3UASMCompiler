@@ -43,9 +43,11 @@ public class Test5 {
 
         write1.setLeFils(new Const(1));
         write2.setLeFils(new Const(2));
-        
+
+        System.out.println("Table des symboles :\n" + symbolTable.toString());
         String result = new GenerateCode().generateUASM(program, symbolTable);
-        System.out.println(result);
+        System.out.println("Arbre :");
         TxtAfficheur.afficher(program);
+        System.out.println("Code Assembleur :\n" + result);
     }
 }

@@ -35,9 +35,11 @@ public class Test4 {
         Idf idf_j = new Idf(intValue2);
         plus.setFilsDroit(idf_j);
 
+        System.out.println("Table des symboles :\n" + symbolTable.toString());
         String result = new GenerateCode().generateUASM(program, symbolTable);
-        System.out.println(result);
+        System.out.println("Arbre :");
         TxtAfficheur.afficher(program);
+        System.out.println("Code Assembleur :\n" + result);
     }
 }
 

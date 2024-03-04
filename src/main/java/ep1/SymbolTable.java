@@ -2,6 +2,7 @@ package ep1;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 // Table des symboles (SymbolTable)
 public class SymbolTable {
@@ -21,7 +22,19 @@ public class SymbolTable {
 		map = new HashMap<>();
 	}
 	
-	// Method to add a key-value pair to the symbol table
+    //
+
+
+    @Override
+    public String toString() {
+        String s ="";
+        for (Map.Entry entry : map.entrySet()) {
+            s += entry.getValue() + "\n";
+        }
+        return s;
+    }
+
+    // Method to add a key-value pair to the symbol table
 	public void addValue(SymbolTableKey key, SymbolTableValue value) {
 		map.put(key, value);
 	}

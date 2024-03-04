@@ -20,8 +20,8 @@ public class Test6 {
         Affectation assignment1 = new Affectation();
         mainFunction.ajouterUnFils(assignment1);
 
-        Idf idf_i = new Idf(intValue1);
-        assignment1.setFilsGauche(idf_i);
+        Idf idf_i1 = new Idf(intValue1);
+        assignment1.setFilsGauche(idf_i1);
         assignment1.setFilsDroit(new Const(0));
 
         TantQue whileLoop = new TantQue(0);
@@ -29,28 +29,33 @@ public class Test6 {
 
         Inferieur lessThan = new Inferieur();
         whileLoop.setCondition(lessThan);
+        Idf idf_i2 = new Idf(intValue1);
         Idf idf_n = new Idf(intValue2);
-        lessThan.setFilsGauche(idf_i);
+        lessThan.setFilsGauche(idf_i2);
         lessThan.setFilsDroit(idf_n);
 
         Bloc block = new Bloc();
         whileLoop.setBloc(block);
 
         Ecrire write = new Ecrire();
-        write.ajouterUnFils(idf_i);
+        Idf idf_i3 = new Idf(intValue1);
+        write.ajouterUnFils(idf_i3);
         block.ajouterUnFils(write);
 
         Affectation assignment2 = new Affectation();
         block.ajouterUnFils(assignment2);
-        assignment2.setFilsGauche(idf_i);
+        Idf idf_i4 = new Idf(intValue1);
+        assignment2.setFilsGauche(idf_i4);
         Plus plus = new Plus();
         assignment2.setFilsDroit(plus);
         plus.setFilsDroit(new Const(1));
-        plus.setFilsGauche(idf_i);
+        plus.setFilsGauche(new Idf(intValue1));
 
+        System.out.println("Table des symboles :\n" + symbolTable.toString());
         String result = new GenerateCode().generateUASM(program, symbolTable);
-        System.out.println(result);
+        System.out.println("Arbre :");
         TxtAfficheur.afficher(program);
+        System.out.println("Code Assembleur :\n" + result);
 
     }
 }

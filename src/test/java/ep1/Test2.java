@@ -22,8 +22,10 @@ public class Test2 {
         Fonction mainFunction = new Fonction(mainFunctionTable);
         program.ajouterUnFils(mainFunction);
 
+        System.out.println("Table des symboles :\n" + symbolTable.toString());
         String result = new GenerateCode().generateUASM(program, symbolTable);
-        System.out.println(result);
+        System.out.println("Arbre :");
         TxtAfficheur.afficher(program);
+        System.out.println("Code Assembleur :\n" + result);
     }
 }
